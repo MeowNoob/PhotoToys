@@ -4,6 +4,7 @@ using OpenCvSharp;
 using PhotoToys.Parameters;
 using System;
 using System.Collections.Generic;
+using DynamicLanguage;
 using static PTMS.OpenCvExtension;
 namespace PhotoToys.Features.Analysis;
 [DisplayName(
@@ -19,19 +20,22 @@ class Analysis : Category
 {
     public override Feature[] Features { get; } = new Feature[]
     {
-        new HistoramEqualization(),
+        new HistogramEqualization(),
         new EdgeDetection(),
         new HeatmapGeneration(),
         new Morphology()
     };
 }
 
-class HistoramEqualization : Feature
+[DisplayName("Histogram Equalization", Sinhala = "Histogram සමීකරණය")]
+[DisplayDescription(
+    Default: "Apply Histogram Equalization to see some details in the image. Keeps photo opacity the same",
+    Sinhala = "රූපයේ සමහර විස්තර බැලීමට Histogram සමීකරණය යොදන්න. පින්තුර පාරාන්ධතාව එලෙසම තබා ගනී"
+)]
+class HistogramEqualization : Feature
 {
-    public override string Name { get; } = nameof(HistoramEqualization).ToReadableName();
     public override IEnumerable<string> Allias => new string[] { "Detail", "Extract Feature", "Feature Extraction" };
-    public override string Description { get; } = "Apply Histogram Equalization to see some details in the image. Keeps photo opacity the same";
-    public HistoramEqualization()
+    public HistogramEqualization()
     {
 
     }
@@ -60,11 +64,15 @@ class HistoramEqualization : Feature
         );
     }
 }
+
+[DisplayName("Edge Detection", Sinhala = "දාර හඳුනාගැනීම")]
+[DisplayDescription(
+    Default: "Apply Simple Edge Detection by finding standard deviation of the photo. Keeps photo opacity the same",
+    Sinhala = "ඡායාරූපයේ සම්මත අපගමනය සොයා ගැනීමෙන් සරල දාර හඳුනාගැනීම යොදන්න. පින්තුර පාරාන්ධතාව එලෙසම තබා ගනී"
+)]
 class EdgeDetection : Feature
 {
-    public override string Name { get; } = nameof(EdgeDetection).ToReadableName();
     public override IEnumerable<string> Allias => new string[] { "Detect Edge", "Detecting Edge" };
-    public override string Description { get; } = "Apply Simple Edge Detection by finding standard deviation of the photo. Keeps photo opacity the same";
     enum OutputModes
     {
         Matrix,
@@ -83,12 +91,12 @@ class EdgeDetection : Feature
             MatDisplayer: new DoubleMatDisplayer(),
             Parameters: new ParameterFromUI[] {
                 new ImageParameter(OneChannelModeEnabled: true).Assign(out var ImageParam),
-                new IntSliderParameter(Name: "Kernal Size", 1, 11, 3, 1).Assign(out var KernalSizeParam),
+                new IntSliderParameter(Name: new DisplayTextAttribute("Kernel Size"){Sinhala = "කර්නල් (Kernel) ප්‍රමාණය"}.ToDisplayText(), 1, 11, 3, 1).Assign(out var KernalSizeParam),
                 //new CheckboxParameter(Name: "Output as Heatmap", Default: false).Assign(out var HeatmapParam)
                 //    .AddDependency(ImageParam.OneChannelReplacement, x => !x, onNoResult: true),
                 //new SelectParameter<ColormapTypes>(Name: "Heatmap Colormap", Enum.GetValues<ColormapTypes>(), 2).Assign(out var ColormapTypeParam)
                 //    .AddDependency(HeatmapParam, x => x, onNoResult: true)
-                new SelectParameter<OutputModes>(Name: "Output as Matrix", Enum.GetValues<OutputModes>()).Assign(out var OutputModeParam)
+                new SelectParameter<OutputModes>(Name: new DisplayTextAttribute("Output as Matrix"){Sinhala= "ප්‍රතිදානය Matrix ලෙස"}.ToDisplayText(), Enum.GetValues<OutputModes>()).Assign(out var OutputModeParam)
             },
             OnExecute: (MatImage) =>
             {
@@ -127,10 +135,14 @@ class EdgeDetection : Feature
         );
     }
 }
+
+[DisplayName("Heatmap Generation", Sinhala = "තාප සිතියම් (Heatmap) උත්පාදනය")]
+[DisplayDescription(
+    Default: "Construct Heatmap from Grayscale Images",
+    Sinhala = "Grayscale පින්තූර වලින් තාප සිතියම සාදන්න"
+)]
 class HeatmapGeneration : Feature
 {
-    public override string Name { get; } = nameof(HeatmapGeneration).ToReadableName();
-    public override string Description { get; } = "Construct Heatmap from Grayscale Images";
     public HeatmapGeneration()
     {
 
@@ -141,7 +153,7 @@ class HeatmapGeneration : Feature
             PageName: Name,
             PageDescription: Description,
             Parameters: new ParameterFromUI[] {
-                new ImageParameter(Name: "Grayscale Image", ColorMode: false).Assign(out var ImageParam),
+                new ImageParameter(Name: new DisplayTextAttribute("Grayscale Image"){Sinhala = "Grayscale රූපය"}.ToDisplayText(), ColorMode: false).Assign(out var ImageParam),
                 new SelectParameter<ColormapTypes>(Name: "Mode", Enum.GetValues<ColormapTypes>(), 2).Assign(out var ColormapTypeParam)
             },
             OnExecute: (MatImage) =>
@@ -159,6 +171,12 @@ class HeatmapGeneration : Feature
         );
     }
 }
+
+[DisplayName("Morphology", Sinhala = "රූප විද්‍යාව")]
+[DisplayDescription(
+    Default: "Apply morphological operations to remove noise, see more details, or extract feature",
+    Sinhala = "ශබ්දය (noise) ඉවත් කිරීමට, වැඩි විස්තර බලන්න, හෝ විශේෂාංගය උපුටා ගැනීමට රූප විද්‍යාත්මක මෙහෙයුම් යොදන්න"
+)]
 class Morphology : Feature
 {
     enum ChannelName : int
@@ -171,9 +189,7 @@ class Morphology : Feature
         Blue = 3,
         Alpha = 6
     }
-    public override string Name { get; } = nameof(Morphology).ToReadableName();
     public override IEnumerable<string> Allias => new string[] { $"{nameof(Morphology)}Ex", "Remove noise", "Detail", "Extract Feature", "Feature Extraction", "Detect Edge", "Detecting Edge" };
-    public override string Description { get; } = "Apply morphological operations to remove noise, see more details, or extract feature";
     public Morphology()
     {
 
@@ -186,14 +202,30 @@ class Morphology : Feature
             Parameters: new ParameterFromUI[]
             {
                 new ImageParameter().Assign(out var ImageParam),
-                new IntSliderParameter(Name: "Kernal Size", 1, 100, 3).Assign(out var KernalSizeParam),
-                new SelectParameter<MorphShapes>(Name: "Kernal Shape", Enum.GetValues<MorphShapes>()).Assign(out var KernalShapeParam),
+                new IntSliderParameter(Name: new DisplayTextAttribute("Kernel Size"){Sinhala = "කර්නල් (Kernel) ප්‍රමාණය"}.ToDisplayText(), 1, 100, 3).Assign(out var KernalSizeParam),
+                new SelectParameter<MorphShapes>(Name: new DisplayTextAttribute("Kernel Shape"){Sinhala = "කර්නල් (Kernel) හැඩය"}.ToDisplayText(), Enum.GetValues<MorphShapes>()).Assign(out var KernalShapeParam),
                 new SelectParameter<MorphTypes>(Name: "Morphology Type", Enum.GetValues<MorphTypes>(), ConverterToDisplay: x => (x.ToString(), x switch
                 {
-                    MorphTypes.Erode => "Remove noise from the image and make most of the element smaller",
-                    MorphTypes.Dilate => "Enlarge the small details and make most of the element larger",
-                    MorphTypes.Open => "Remove noise from the image while trying to maintain the same size",
-                    MorphTypes.Close => "Fill in the hole while trying to maintain the same size",
+                    MorphTypes.Erode => new DisplayTextAttribute
+                    ("Remove noise from the image and make most of the element smaller")
+                    {
+                        Sinhala= "රූපයෙන් ශබ්දය (noise) ඉවත් කර බොහෝ මූලද්‍රව්‍ය (elements) කුඩා කරන්න"
+                    }.ToDisplayText(),
+                    MorphTypes.Dilate => new DisplayTextAttribute
+                    ("Enlarge the small details and make most of the element larger")
+                    {
+                        Sinhala = "කුඩා විස්තර විශාල කර බොහෝ මූලද්‍රව්‍ය (elements) විශාල කරන්න"
+                    }.ToDisplayText(),
+                    MorphTypes.Open => new DisplayTextAttribute
+                    ("Remove noise from the image while trying to maintain the same size")
+                    {
+                        Sinhala = "එකම ප්‍රමාණය පවත්වා ගැනීමට උත්සාහ කරන අතරතුර රූපයෙන් ශබ්දය (noise) ඉවත් කරන්න"
+                    }.ToDisplayText(),
+                    MorphTypes.Close => new DisplayTextAttribute
+                    ("Fill in the hole while trying to maintain the same size")
+                    {
+                        Sinhala="එකම ප්‍රමාණය පවත්වා ගැනීමට උත්සාහ කරන අතරතුර සිදුර පුරවන්න"
+                    }.ToDisplayText(),
                     _ => null
                 })).Assign(out var MorphTypeParam)
                 .Edit(x => x.ParameterValueChanged += delegate

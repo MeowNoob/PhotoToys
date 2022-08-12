@@ -284,12 +284,12 @@ class Border : Feature
             {
                 // ColorChangable: false, AlphaRestoreChangable: false
                 new ImageParameter(AlphaMode: ImageParameter.AlphaModes.Include).Assign(out var imageParameter),
-                new DoubleNumberBoxParameter("Top Border", 10).Assign(out var T),
-                new DoubleNumberBoxParameter("Left Border", 10).Assign(out var L),
-                new DoubleNumberBoxParameter("Right Border", 10).Assign(out var R),
-                new DoubleNumberBoxParameter("Bottom Border", 10).Assign(out var B),
-                new SelectParameter<BorderTypes>(Name: "Blur Border Mode", Enum.GetValues<BorderTypes>().Where(x => !(x is BorderTypes.Transparent or BorderTypes.Reflect101 or BorderTypes.Isolated)).Distinct().ToArray(), 0, x => (x == BorderTypes.Constant ? "Default (Color)" : x.ToString(), null)).Assign(out var Border),
-                new ColorPickerParameter("Color", Windows.UI.Color.FromArgb(255, 66, 66, 66)).Assign(out var C).AddDependency(Border, x => x is BorderTypes.Constant)
+                new DoubleNumberBoxParameter(new DisplayTextAttribute("Top Border"){Sinhala = "ඉහළ මායිම"}.ToDisplayText(), 10).Assign(out var T),
+                new DoubleNumberBoxParameter(new DisplayTextAttribute("Left Border"){Sinhala = "වම් මායිම"}.ToDisplayText(), 10).Assign(out var L),
+                new DoubleNumberBoxParameter(new DisplayTextAttribute("Right Border"){Sinhala = "දකුණු මායිම"}.ToDisplayText(), 10).Assign(out var R),
+                new DoubleNumberBoxParameter(new DisplayTextAttribute("Bottom Border"){Sinhala = "පහළ මායිම"}.ToDisplayText(), 10).Assign(out var B),
+                new SelectParameter<BorderTypes>(Name: new DisplayTextAttribute("Blur Border Mode"){Sinhala = "නොපැහැදිලි මායිම් මාදිලිය"}.ToDisplayText(), Enum.GetValues<BorderTypes>().Where(x => !(x is BorderTypes.Transparent or BorderTypes.Reflect101 or BorderTypes.Isolated)).Distinct().ToArray(), 0, x => (x == BorderTypes.Constant ? "Default (Color)" : x.ToString(), null)).Assign(out var Border),
+                new ColorPickerParameter(new DisplayTextAttribute("Color"){Sinhala = "වර්ණය"}.ToDisplayText(), Windows.UI.Color.FromArgb(255, 66, 66, 66)).Assign(out var C).AddDependency(Border, x => x is BorderTypes.Constant)
             },
             OnExecute: async x =>
             {

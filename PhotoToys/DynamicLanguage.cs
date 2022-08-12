@@ -145,6 +145,10 @@ static class Extension
     {
         return displayTextAttribute.FinalOutput.Value;
     }
+    public static string ToDisplayText(this DisplayTextAttribute displayTextAttribute)
+    {
+        return displayTextAttribute.FinalOutput.Value;
+    }
     public static string GetDisplayText<T>(string memberName)
     {
         var MemberInfo = typeof(T).GetMember(memberName)[0];
